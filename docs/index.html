@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jurnal Energi Positif ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Sidebar Nav - Desktop -->
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+      <span class="nav-text">Jurnal</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+      <span class="nav-text">Mantra</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+      <span class="nav-text">Statistik</span>
+    </a>
+  </nav>
+
+  <!-- Bottom Nav - Mobile -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+    </a>
+  </nav>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal" style="display: none; z-index: 400;">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="authModalTitle">🔐 Masuk</h2>
+        <button class="modal-close" id="closeAuthModal">&times;</button>
+      </div>
+      <div class="auth-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="authEmail" class="form-input" placeholder="emailmu@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="authPassword" class="form-input" placeholder="password kamu">
+        </div>
+        <div id="authError" class="auth-error" style="display:none;"></div>
+        <button class="btn btn-primary" id="authSubmitBtn" style="width:100%;margin-top:10px;">Masuk</button>
+        <p style="text-align:center;margin-top:15px;color:rgba(255,255,255,0.7);">
+          Belum punya akun? <a href="#" id="toggleAuthMode" style="color:#ff6b6b;font-weight:600;">Daftar</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Journal Modal -->
+  <div class="modal-overlay" id="journalModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">✍️ Tuliskan Jurnalmu</h2>
+        <button class="modal-close" id="closeJournalModal">&times;</button>
+      </div>
+      <form id="journalForm" class="journal-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Energi Sebelum</label>
+            <select name="energy_before" class="form-select">
+              <option value="low">Rendah 💧</option>
+              <option value="medium">Sedang ⚡</option>
+              <option value="high">Tinggi 🌟</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Perasaan Sebelum</label>
+            <select name="mood_before" class="form-select">
+              <option value="sad">Sedih 🌧️</option>
+              <option value="neutral">Netral ⚪</option>
+              <option value="happy">Senang ☀️</option>
+              <option value="excited">Bersemangat 🔥</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Afirmasi Energi Positif *</label>
+            <select name="affirmation" class="form-select" id="affirmationSelect">
+              <option value="">Pilih afirmasi...</option>
+              <option value="Aku adalah magnet bagi hal-hal bagus dalam hidupku.">Aku adalah magnet bagi hal-hal bagus dalam hidupku.</option>
+              <option value="Setiap hari membawa peluang baru untuk bertumbuh.">Setiap hari membawa peluang baru untuk bertumbuh.</option>
+              <option value="Aku berhasil dan layak menerima kebahagiaan.">Aku berhasil dan layak menerima kebahagiaan.</option>
+              <option value="Energi positif mengalir ke dalam dan keluar dari tubuhku.">Energi positif mengalir ke dalam dan keluar dari tubuhku.</option>
+              <option value="Aku bersyukur atas semua yang telah kudapat hari ini.">Aku bersyukur atas semua yang telah kudapat hari ini.</option>
+              <option value="Aku mampu dan kuat untuk menaklukkan setiap tantangan.">Aku mampu dan kuat untuk menaklukkan setiap tantangan.</option>
+              <option value="Hari ini aku memilih untuk bahagia dan bersyukur.">Hari ini aku memilih untuk bahagia dan bersyukur.</option>
+              <option value="Aku menarik keberkahan dan kebahagiaan ke dalam hidupku.">Aku menarik keberkahan dan kebahagiaan ke dalam hidupku.</option>
+              <option value="Setiap langkah kecilku mengarah ke arah yang lebih baik.">Setiap langkah kecilku mengarah ke arah yang lebih baik.</option>
+              <option value="Aku adalah pencipta kebahagiaan dan ketenangan dalam hidupku.">Aku adalah pencipta kebahagiaan dan ketenangan dalam hidupku.</option>
+            </select>
+            <input type="text" name="custom_affirmation" class="form-input" placeholder="Tuliskan afirmasi personalmu..." id="customAffirmationInput" style="display:none;">
+            <button type="button" class="btn btn-sm btn-outline" id="toggleCustomAffirmation">Gunakan afirmasi lain</button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Rencana Aksi</label>
+            <input type="text" name="action_plan" class="form-input" placeholder="Apa yang akan kamu lakukan?">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Energi Setelah</label>
+            <select name="energy_after" class="form-select">
+              <option value="low">Rendah 💧</option>
+              <option value="medium">Sedang ⚡</option>
+              <option value="high">Tinggi 🌟</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Perasaan Setelah</label>
+            <select name="mood_after" class="form-select">
+              <option value="sad">Sedih 🌧️</option>
+              <option value="neutral">Netral ⚪</option>
+              <option value="happy">Senang ☀️</option>
+              <option value="excited">Bersemangat 🔥</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Terima Kasih Sebelum</label>
+            <input type="text" name="gratitude_before" class="form-input" placeholder="Apa yang kamu syukuri sebelum?">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Terima Kasih Setelah</label>
+            <input type="text" name="gratitude_after" class="form-input" placeholder="Apa yang kamu syukuri setelah?">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelJournal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Jurnal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="particles" id="particles"></div>
+
+      <!-- Flash Messages -->
+      <div id="flashMessages"></div>
+
+      <!-- Auth Status -->
+      <div id="authStatus" style="display:none; margin-bottom:20px;">
+        <div class="auth-badge">
+          <span id="authUserEmail"></span>
+          <button class="btn btn-sm btn-outline" id="logoutBtn">Keluar</button>
+        </div>
+      </div>
+
+      <header class="page-header">
+        <h1 class="page-title">📓 Jurnal Energi Positif</h1>
+        <p class="page-subtitle">Tuliskan perjalanan energi positifmu setiap hari</p>
+      </header>
+
+      <!-- Add Journal Button (only when logged in) -->
+      <button class="btn btn-float" id="openModalBtn" style="display:none;">
+        <span class="btn-icon">✍️</span>
+        Tulis Jurnal
+      </button>
+
+      <!-- Login CTA (when not logged in) -->
+      <div id="loginCTA" style="text-align:center; margin-bottom:30px;">
+        <button class="btn btn-primary" id="openAuthBtn" style="font-size:18px; padding:15px 40px;">
+          <span class="btn-icon">🔐</span>
+          Masuk untuk Mulai
+        </button>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <div class="filter-chips">
+          <a href="/?filter=all" class="chip chip-active">Semua ✨</a>
+          <a href="/?filter=low" class="chip">Rendah 💧</a>
+          <a href="/?filter=medium" class="chip">Sedang ⚡</a>
+          <a href="/?filter=high" class="chip">Tinggi 🌟</a>
+        </div>
+        <div class="filter-actions">
+          <form method="GET" class="filter-search-form">
+            <input type="text" name="search" class="form-input-sm" placeholder="🔍 Cari jurnal...">
+          </form>
+          <div class="sort-chips">
+            <a href="/?sort=desc" class="chip chip-sm">Terbaru ↓</a>
+            <a href="/?sort=asc" class="chip chip-sm">Terlama ↑</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Journal List -->
+      <div class="journal-list" id="journalList">
+        <!-- Journals loaded via JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">📭</div>
+        <p class="empty-text">Belum ada jurnal hari ini...</p>
+        <button class="btn btn-primary" id="openModalBtn2" style="display:none;">
+          <span class="btn-icon">✍️</span>
+          Mulai Tuliskan
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ============================================
+    // SUPABASE CONFIGURATION
+    // Ganti dengan project URL dan anon key kamu
+    // ============================================
+    const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ============================================
+    // AUTH STATE MANAGEMENT
+    // ============================================
+    let currentUser = null;
+
+    // Check if user is logged in on page load
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        currentUser = session.user;
+        updateAuthUI();
+      }
+    }
+
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        currentUser = session.user;
+        updateAuthUI();
+      } else {
+        currentUser = null;
+        updateAuthUI();
+      }
+    });
+
+    function updateAuthUI() {
+      const authStatus = document.getElementById('authStatus');
+      const openModalBtn = document.getElementById('openModalBtn');
+      const loginCTA = document.getElementById('loginCTA');
+      const emptyState = document.getElementById('emptyState');
+      const openModalBtn2 = document.getElementById('openModalBtn2');
+
+      if (currentUser) {
+        authStatus.style.display = 'block';
+        openModalBtn.style.display = 'flex';
+        loginCTA.style.display = 'none';
+        document.getElementById('authUserEmail').textContent = currentUser.email;
+        loadJournals();
+      } else {
+        authStatus.style.display = 'none';
+        openModalBtn.style.display = 'none';
+        loginCTA.style.display = 'block';
+        emptyState.style.display = 'none';
+      }
+    }
+
+    // Open Auth Modal
+    document.getElementById('openAuthBtn').addEventListener('click', () => {
+      document.getElementById('authModal').style.display = 'flex';
+    });
+
+    // Toggle auth mode (login/register)
+    document.getElementById('toggleAuthMode').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('authModalTitle');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const emailInput = document.getElementById('authEmail');
+      const toggleLink = document.getElementById('toggleAuthMode');
+
+      if (title.textContent.includes('Masuk')) {
+        // Switch to Register
+        title.textContent = '📝 Daftar';
+        submitBtn.textContent = 'Daftar';
+        toggleLink.textContent = 'Sudah punya akun? Masuk';
+      } else {
+        // Switch to Login
+        title.textContent = '🔐 Masuk';
+        submitBtn.textContent = 'Masuk';
+        toggleLink.textContent = 'Belum punya akun? Daftar';
+      }
+    });
+
+    // Handle Auth Submit
+    document.getElementById('authSubmitBtn').addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const errorEl = document.getElementById('authError');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const title = document.getElementById('authModalTitle');
+      const isRegister = title.textContent.includes('Daftar');
+
+      errorEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Loading...';
+
+      try {
+        let result;
+        if (isRegister) {
+          result = await supabase.auth.signUp({ email, password });
+        } else {
+          result = await supabase.auth.signInWithPassword({ email, password });
+        }
+
+        if (result.error) {
+          errorEl.textContent = result.error.message;
+          errorEl.style.display = 'block';
+        } else {
+          document.getElementById('authModal').style.display = 'none';
+          document.getElementById('authEmail').value = '';
+          document.getElementById('authPassword').value = '';
+        }
+      } catch (err) {
+        errorEl.textContent = 'Terjadi kesalahan. Coba lagi.';
+        errorEl.style.display = 'block';
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = isRegister ? 'Daftar' : 'Masuk';
+    });
+
+    // Close Auth Modal
+    document.getElementById('closeAuthModal').addEventListener('click', () => {
+      document.getElementById('authModal').style.display = 'none';
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      currentUser = null;
+      updateAuthUI();
+      document.getElementById('journalList').innerHTML = '';
+    });
+
+    // ============================================
+    // JOURNAL CRUD
+    // ============================================
+    async function loadJournals() {
+      if (!currentUser) return;
+
+      const journalList = document.getElementById('journalList');
+      const emptyState = document.getElementById('emptyState');
+
+      const { data, error } = await supabase
+        .from('journals')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        journalList.innerHTML = '<p style="color:#fff;text-align:center;">Error loading journals</p>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        journalList.innerHTML = '';
+        emptyState.style.display = 'block';
+        emptyState.querySelector('.empty-icon').textContent = '📭';
+        emptyState.querySelector('.empty-text').textContent = 'Belum ada jurnal hari ini...';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      renderJournals(data);
+    }
+
+    function renderJournals(journals) {
+      const journalList = document.getElementById('journalList');
+      journalList.innerHTML = '';
+
+      const moodLabels = {
+        sad: 'Sedih 🌧️',
+        neutral: 'Netral ⚪',
+        happy: 'Senang ☀️',
+        excited: 'Bersemangat 🔥'
+      };
+
+      journals.forEach(entry => {
+        const card = document.createElement('div');
+        card.className = 'journal-card';
+        card.innerHTML = `
+          <div class="journal-card-header">
+            <div class="journal-date">${entry.date || new Date(entry.created_at).toLocaleDateString('id-ID')}</div>
+            <div class="journal-energy">${getEnergyEmoji(entry.energy_before)} → ${getEnergyEmoji(entry.energy_after)}</div>
+          </div>
+          <a href="#" class="journal-link" onclick="viewJournal('${entry.id}')">
+            <div class="journal-affirmation">${entry.affirmation}</div>
+            ${entry.action_plan ? `<div class="journal-action">📝 ${entry.action_plan}</div>` : ''}
+            ${entry.gratitude_before || entry.gratitude_after ? `
+              <div class="journal-gratitude">
+                ${entry.gratitude_before ? `🙏 ${entry.gratitude_before}<br>` : ''}
+                ${entry.gratitude_after ? `🙏 ${entry.gratitude_after}` : ''}
+              </div>
+            ` : ''}
+          </a>
+          <div class="journal-meta">
+            <span class="journal-time">${new Date(entry.created_at).toLocaleTimeString('id-ID')}</span>
+            <button class="btn btn-sm btn-danger" onclick="deleteJournal('${entry.id}')">🗑️</button>
+          </div>
+        `;
+        journalList.appendChild(card);
+      });
+    }
+
+    function getEnergyEmoji(energy) {
+      const emojis = { low: '💧', medium: '⚡', high: '🌟' };
+      return emojis[energy] || '💫';
+    }
+
+    // ============================================
+    // SUBMIT JOURNAL
+    // ============================================
+    document.getElementById('journalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      const affirmation = formData.get('custom_affirmation') || formData.get('affirmation');
+      if (!affirmation) {
+        showFlash('Silakan tuliskan (atau pilih) afirmasi energi positif!', 'error');
+        return;
+      }
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Menyimpan...';
+
+      const journalData = {
+        user_id: currentUser.id,
+        energy_before: formData.get('energy_before'),
+        mood_before: formData.get('mood_before'),
+        affirmation: affirmation,
+        action_plan: formData.get('action_plan') || '',
+        energy_after: formData.get('energy_after'),
+        mood_after: formData.get('mood_after'),
+        gratitude_before: formData.get('gratitude_before') || '',
+        gratitude_after: formData.get('gratitude_after') || ''
+      };
+
+      const { data, error } = await supabase
+        .from('journals')
+        .insert([journalData])
+        .select();
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Simpan Jurnal';
+
+      if (error) {
+        showFlash('Gagal menyimpan jurnal!', 'error');
+        console.error(error);
+      } else {
+        showFlash('Jurnal berhasil disimpan! ✨', 'success');
+        e.target.reset();
+        document.getElementById('journalModal').style.display = 'none';
+        loadJournals();
+      }
+    });
+
+    // ============================================
+    // DELETE JOURNAL
+    // ============================================
+    async function deleteJournal(id) {
+      if (!confirm('Hapus jurnal ini?')) return;
+
+      const { error } = await supabase
+        .from('journals')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', currentUser.id);
+
+      if (error) {
+        showFlash('Gagal menghapus jurnal!', 'error');
+      } else {
+        showFlash('Jurnal dihapus.', 'success');
+        loadJournals();
+      }
+    }
+
+    // ============================================
+    // VIEW JOURNAL DETAIL
+    // ============================================
+    function viewJournal(id) {
+      // Redirect to detail page or show modal
+      window.location.href = `/journal/${id}`;
+    }
+
+    // ============================================
+    // MODAL CONTROLS
+    // ============================================
+    document.querySelectorAll('[id^="openModalBtn"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.getElementById('journalModal').style.display = 'flex';
+      });
+    });
+
+    document.getElementById('closeJournalModal').addEventListener('click', () => {
+      document.getElementById('journalModal').style.display = 'none';
+    });
+
+    document.getElementById('cancelJournal').addEventListener('click', () => {
+      document.getElementById('journalModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', function(e) {
+      if (e.target === document.getElementById('journalModal')) {
+        document.getElementById('journalModal').style.display = 'none';
+      }
+    });
+
+    // Toggle custom affirmation
+    document.getElementById('toggleCustomAffirmation').addEventListener('click', function() {
+      const customInput = document.getElementById('customAffirmationInput');
+      const select = document.getElementById('affirmationSelect');
+      if (customInput.style.display === 'none' || !customInput.style.display) {
+        customInput.style.display = 'block';
+        select.style.display = 'none';
+        this.textContent = 'Pilih dari daftar';
+      } else {
+        customInput.style.display = 'none';
+        select.style.display = 'block';
+        this.textContent = 'Gunakan afirmasi lain';
+      }
+    });
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function showFlash(message, type = 'success') {
+      const container = document.getElementById('flashMessages');
+      const flash = document.createElement('div');
+      flash.className = `flash-message flash-${type}`;
+      flash.innerHTML = `
+        ${message}
+        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      container.appendChild(flash);
+      setTimeout(() => {
+        flash.style.opacity = '0';
+        setTimeout(() => flash.remove(), 300);
+      }, 4000);
+    }
+
+    // ============================================
+    // FLOATING PARTICLES
+    // ============================================
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+
+    createParticles();
+
+    // ============================================
+    // INIT
+    // ============================================
+    checkAuth();
+  </script>
+</body>
+</html>
