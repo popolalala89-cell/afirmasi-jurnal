@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Jurnal - Jurnal Energi Positif</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+      <span class="nav-text">Jurnal</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+      <span class="nav-text">Mantra</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+      <span class="nav-text">Statistik</span>
+    </a>
+  </nav>
+
+  <nav class="bottom-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+    </a>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="particles" id="particles"></div>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">
+              {{ message }}
+              <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <header class="page-header">
+        <h1 class="page-title">📖 Detail Jurnal</h1>
+        <a href="/" class="btn btn-outline btn-back">← Kembali</a>
+      </header>
+
+      <div class="journal-detail">
+        <div class="journal-detail-header">
+          <div class="journal-detail-date">{{ entry.date }}</div>
+          <div class="journal-detail-energy">
+            {% set labels = {'low': '💧', 'medium': '⚡', 'high': '🌟'} %}
+            {{ labels.get(entry.energy_before, '💫') }} → {{ labels.get(entry.energy_after, '💫') }}
+          </div>
+        </div>
+
+        <div class="journal-detail-section">
+          <h3 class="section-title">✨ Afirmasi Positif</h3>
+          <p class="section-content">{{ entry.affirmation }}</p>
+        </div>
+
+        {% if entry.action_plan %}
+        <div class="journal-detail-section">
+          <h3 class="section-title">📝 Rencana Aksi</h3>
+          <p class="section-content">{{ entry.action_plan }}</p>
+        </div>
+        {% endif %}
+
+        <div class="journal-detail-grid">
+          <div class="journal-detail-section">
+            <h3 class="section-title">😊 Perasaan Sebelum</h3>
+            <p class="section-content">
+              {% set moods = {'sad': 'Sedih 🌧️', 'neutral': 'Netral ⚪', 'happy': 'Senang ☀️', 'excited': 'Bersemangat 🔥'} %}
+              {{ moods.get(entry.mood_before, entry.mood_before) }}
+            </p>
+          </div>
+
+          <div class="journal-detail-section">
+            <h3 class="section-title">😊 Perasaan Setelah</h3>
+            <p class="section-content">
+              {% set moods = {'sad': 'Sedih 🌧️', 'neutral': 'Netral ⚪', 'happy': 'Senang ☀️', 'excited': 'Bersemangat 🔥'} %}
+              {{ moods.get(entry.mood_after, entry.mood_after) }}
+            </p>
+          </div>
+        </div>
+
+        {% if entry.gratitude_before or entry.gratitude_after %}
+        <div class="journal-detail-section">
+          <h3 class="section-title">🙏 Terima Kasih</h3>
+          <div class="gratitude-grid">
+            {% if entry.gratitude_before %}
+            <div class="gratitude-item">
+              <span class="gratitude-label">Sebelum:</span>
+              <span class="gratitude-text">{{ entry.gratitude_before }}</span>
+            </div>
+            {% endif %}
+            {% if entry.gratitude_after %}
+            <div class="gratitude-item">
+              <span class="gratitude-label">Setelah:</span>
+              <span class="gratitude-text">{{ entry.gratitude_after }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="journal-detail-footer">
+          <span class="journal-time">{{ entry.created_at.split('.')[0] if entry.created_at else '' }}</span>
+          <div class="detail-actions">
+            <form action="/delete/{{ entry.id }}" method="POST" onsubmit="return confirmDelete(event, this)">
+              <button type="submit" class="btn btn-danger">🗑️ Hapus Jurnal</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Floating particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+
+    // Confirm delete
+    function confirmDelete(e, form) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Hapus jurnal ini?')) {
+        form.submit();
+      }
+    }
+
+    createParticles();
+  </script>
+</body>
+</html>

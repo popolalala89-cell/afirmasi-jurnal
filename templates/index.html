@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jurnal Energi Positif</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+      <span class="nav-text">Jurnal</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+      <span class="nav-text">Mantra</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+      <span class="nav-text">Statistik</span>
+    </a>
+  </nav>
+
+  <nav class="bottom-nav">
+    <a href="/" class="nav-link active">
+      <span>📓</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>✨</span>
+    </a>
+    <a href="#" class="nav-link">
+      <span>📊</span>
+    </a>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <!-- Floating particles background -->
+      <div class="particles" id="particles"></div>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">
+              {{ message }}
+              <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <header class="page-header">
+        <h1 class="page-title">📓 Jurnal Energi Positif</h1>
+        <p class="page-subtitle">Tuliskan perjalanan energi positifmu setiap hari</p>
+      </header>
+
+      <!-- Add Journal Modal Trigger -->
+      <button class="btn btn-float" id="openModalBtn">
+        <span class="btn-icon">✍️</span>
+        Tulis Jurnal
+      </button>
+
+      <!-- Add Journal Modal -->
+      <div class="modal-overlay" id="journalModal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">✍️ Tuliskan Jurnalmu</h2>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+          </div>
+          <form action="/add" method="POST" class="journal-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Energi Sebelum</label>
+                <select name="energy_before" class="form-select">
+                  {% for value, label in energy_levels %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Perasaan Sebelum</label>
+                <select name="mood_before" class="form-select">
+                  {% for value, label in mood_levels %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Afirmasi Energi Positif *</label>
+                <select name="affirmation" class="form-select" id="affirmationSelect">
+                  {% for aff in affirmations %}
+                  <option value="{{ aff }}">{{ aff }}</option>
+                  {% endfor %}
+                </select>
+                <input type="text" name="custom_affirmation" class="form-input" placeholder="Tuliskan afirmasi personalmu..." id="customAffirmationInput" style="display:none;">
+                <button type="button" class="btn btn-sm btn-outline" id="toggleCustomAffirmation">Gunakan afirmasi lain</button>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Rencana Aksi</label>
+                <input type="text" name="action_plan" class="form-input" placeholder="Apa yang akan kamu lakukan?">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Energi Setelah</label>
+                <select name="energy_after" class="form-select">
+                  {% for value, label in energy_levels %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Perasaan Setelah</label>
+                <select name="mood_after" class="form-select">
+                  {% for value, label in mood_levels %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Terima Kasih Sebelum</label>
+                <input type="text" name="gratitude_before" class="form-input" placeholder="Apa yang kamu syukuri sebelum?">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Terima Kasih Setelah</label>
+                <input type="text" name="gratitude_after" class="form-input" placeholder="Apa yang kamu syukuri setelah?">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline" id="cancelJournal">Batal</button>
+              <button type="submit" class="btn btn-primary">Simpan Jurnal</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <div class="filter-chips">
+          <a href="/?filter=all&sort={{ sort }}{% if search_term %}&search={{ search_term }}{% endif %}" class="chip {% if active_filter == 'all' %}chip-active{% endif %}">Semua ✨</a>
+          <a href="/?filter=low&sort={{ sort }}{% if search_term %}&search={{ search_term }}{% endif %}" class="chip {% if active_filter == 'low' %}chip-active{% endif %}">Rendah 💧</a>
+          <a href="/?filter=medium&sort={{ sort }}{% if search_term %}&search={{ search_term }}{% endif %}" class="chip {% if active_filter == 'medium' %}chip-active{% endif %}">Sedang ⚡</a>
+          <a href="/?filter=high&sort={{ sort }}{% if search_term %}&search={{ search_term }}{% endif %}" class="chip {% if active_filter == 'high' %}chip-active{% endif %}">Tinggi 🌟</a>
+        </div>
+        <div class="filter-actions">
+          <form method="GET" class="filter-search-form">
+            <input type="text" name="search" class="form-input-sm" placeholder="🔍 Cari jurnal..." value="{{ search_term }}">
+            <input type="hidden" name="filter" value="{{ active_filter }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
+          </form>
+          <div class="sort-chips">
+            <a href="/?filter={{ active_filter }}&sort=desc{% if search_term %}&search={{ search_term }}{% endif %}" class="chip chip-sm {% if sort == 'desc' %}chip-active{% endif %}">Terbaru ↓</a>
+            <a href="/?filter={{ active_filter }}&sort=asc{% if search_term %}&search={{ search_term }}{% endif %}" class="chip chip-sm {% if sort == 'asc' %}chip-active{% endif %}">Terlama ↑</a>
+          </div>
+          {% if search_term or active_filter != 'all' %}
+          <a href="/" class="chip chip-reset">✕ Reset</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Journal List -->
+      {% if entries %}
+      <div class="journal-list">
+        {% for entry in entries %}
+        <div class="journal-card">
+          <div class="journal-card-header">
+            <div class="journal-date">{{ entry.date }}</div>
+            <div class="journal-energy">
+              {% set eb = entry.energy_before %}
+              {% set ea = entry.energy_after %}
+              {% set labels = {'low': '💧', 'medium': '⚡', 'high': '🌟'} %}
+              {{ labels.get(eb, '💫') }} → {{ labels.get(ea, '💫') }}
+            </div>
+          </div>
+          <a href="/journal/{{ entry.id }}" class="journal-link">
+            <div class="journal-affirmation">{{ entry.affirmation }}</div>
+            {% if entry.action_plan %}
+            <div class="journal-action">📝 {{ entry.action_plan }}</div>
+            {% endif %}
+            {% if entry.gratitude_before or entry.gratitude_after %}
+            <div class="journal-gratitude">
+              {% if entry.gratitude_before %}🙏 {{ entry.gratitude_before }}<br>{% endif %}
+              {% if entry.gratitude_after %}🙏 {{ entry.gratitude_after }}{% endif %}
+            </div>
+            {% endif %}
+          </a>
+          <div class="journal-meta">
+            <span class="journal-time">{{ entry.created_at.split('.')[0] if entry.created_at else '' }}</span>
+            <form action="/delete/{{ entry.id }}" method="POST" onsubmit="return confirmDelete(event, this)">
+              <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p class="empty-text">Belum ada jurnal hari ini...</p>
+        <button class="btn btn-primary" id="openModalBtn2">
+          <span class="btn-icon">✍️</span>
+          Mulai Tuliskan
+        </button>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <script>
+    // Flash message auto-dismiss
+    const flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(msg => {
+      setTimeout(() => {
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 300);
+      }, 4000);
+    });
+
+    // Modal open/close
+    document.querySelectorAll('[id^="openModalBtn"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.getElementById('journalModal').style.display = 'flex';
+      });
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+      document.getElementById('journalModal').style.display = 'none';
+    });
+
+    document.getElementById('cancelJournal').addEventListener('click', function() {
+      document.getElementById('journalModal').style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+      if (e.target === document.getElementById('journalModal')) {
+        document.getElementById('journalModal').style.display = 'none';
+      }
+    });
+
+    // Toggle custom affirmation
+    document.getElementById('toggleCustomAffirmation').addEventListener('click', function() {
+      const customInput = document.getElementById('customAffirmationInput');
+      const select = document.getElementById('affirmationSelect');
+      if (customInput.style.display === 'none' || !customInput.style.display) {
+        customInput.style.display = 'block';
+        select.style.display = 'none';
+        this.textContent = 'Pilih dari daftar';
+      } else {
+        customInput.style.display = 'none';
+        select.style.display = 'block';
+        this.textContent = 'Gunakan afirmasi lain';
+      }
+    });
+
+    // Confirm delete
+    function confirmDelete(e, form) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Hapus jurnal ini?')) {
+        form.submit();
+      }
+    }
+
+    // Floating particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+
+    createParticles();
+  </script>
+</body>
+</html>
